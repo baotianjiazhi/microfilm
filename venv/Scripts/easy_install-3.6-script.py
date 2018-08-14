@@ -1,4 +1,4 @@
-#!C:\Users\baobaobao123\Desktop\博客相关\flask\untitled\venv\Scripts\python.exe -x
+#!C:\Users\baobaobao123\Desktop\博客相关\flask\flask_test\awesome-python3-webapp\venv\Scripts\python.exe -x
 # EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==39.1.0','console_scripts','easy_install-3.6'
 __requires__ = 'setuptools==39.1.0'
 import re
