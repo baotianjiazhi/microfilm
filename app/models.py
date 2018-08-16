@@ -2,17 +2,10 @@
 Created by Baobaobao123
 Thank you 
 """
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import pymysql
+from app import db
 __author__ = 'Baobaobao123'
 
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:baobaobao123@127.0.0.1:3306/movie"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-
-db = SQLAlchemy(app)
 
 
 #会员数据模型
@@ -158,6 +151,10 @@ class Admin(db.Model):
     def __repr__(self):
         return "<Admin %r>" % self.name
 
+    def check_pwd(self, pwd):
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.pwd, pwd)
+
 #管理员登陆日志
 class Adminlog(db.Model):
     __tablename__ = "adminlog"
@@ -183,15 +180,17 @@ class Oplog(db.Model):
     def __repr__(self):
         return "<Oplog %r>" % self.id
 
+
+
 if __name__ == '__main__':
     db.create_all()
-    '''
+   
     role = Role(
         name="超级管理员",
         auths=""
     )
     db.session.add(role)
-    db.session.commit()'''
+    db.session.commit()
     from werkzeug.security import generate_password_hash
     admin01=Admin(
         name="imoocmovie1",
@@ -201,3 +200,4 @@ if __name__ == '__main__':
     )
     db.session.add(admin01)
     db.session.commit()
+
