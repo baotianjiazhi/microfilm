@@ -7,7 +7,6 @@ from app import db
 __author__ = 'Baobaobao123'
 
 
-
 #会员数据模型
 class User(db.Model):
     __tablename__ = "user"
@@ -183,7 +182,7 @@ class Oplog(db.Model):
 
 
 if __name__ == '__main__':
-    db.create_all()
+    # db.create_all()
    
     role = Role(
         name="超级管理员",
@@ -193,8 +192,8 @@ if __name__ == '__main__':
     db.session.commit()
     from werkzeug.security import generate_password_hash
     admin01=Admin(
-        name="imoocmovie1",
-        pwd=generate_password_hash("imoocmovie1"),
+        name="baobaobao123",
+        pwd=generate_password_hash("baobaobao123"),
         is_super=0,
         role_id=1
     )
