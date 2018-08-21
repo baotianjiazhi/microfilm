@@ -2,47 +2,101 @@
 Created by Baobaobao123
 Thank you 
 """
+from app import db
+from app.home.forms import RegisterForm, LoginForm
+from . import home
+from flask import render_template, redirect, url_for, flash, session, request
+from app.models import User, Userlog
+from werkzeug.security import generate_password_hash
+from functools import wraps
+import uuid
 __author__ = 'Baobaobao123'
 
-from . import home
-from flask import render_template, redirect, url_for
 
+# 登陆装饰器
+def user_login_req(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("home.login", next=request.url))
+        return f(*args, **kwargs)
 
-@home.route("/login/")
+    return decorated_function
+
+@home.route("/login/", methods=["GET", "POST"])
 def login():
-    return render_template("home/login.html")
+    form = LoginForm()
+    if form.validate_on_submit():
+        data = form.data
+        user = User.query.filter_by(name=data["name"]).first()
+        if user is None:
+            flash("用户不存在", "err")
+            return redirect(url_for("home.login"))
+        if not user.check_pwd(data["pwd"]):
+            flash("密码错误", "err")
+            return redirect(url_for("home.login"))
+        session["user"] = user.name
+        session["user_id"] = user.id
+        userlog = Userlog(
+            user_id=user.id,
+            ip=request.remote_addr
+        )
+        db.session.add(userlog)
+        db.session.commit()
+        return redirect(url_for("home.user"))
+    return render_template("home/login.html", form=form)
 
 
 @home.route("/logout/")
 def logout():
+    session.pop("user", None)
+    session.pop("user.id", None)
     return redirect(url_for("home.login"))
 
-
-@home.route("/regist/")
+#会员注册
+@home.route("/regist/", methods=["GET", "POST"])
 def regist():
-    return render_template("home/regist.html")
+    form = RegisterForm()
+    if form.validate_on_submit():
+        data = form.data
+        user = User(
+            name=data["name"],
+            email=data["email"],
+            phone=data["phone"],
+            pwd=generate_password_hash(data["pwd"]),
+            uuid=uuid.uuid4().hex,
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash("注册成功", "ok")
+    return render_template("home/regist.html", form=form)
 
 
 @home.route("/user/")
+@user_login_req
 def user():
     return render_template("home/user.html")
 
 @home.route("/pwd/")
+@user_login_req
 def pwd():
     return render_template("home/pwd.html")
 
 
 @home.route("/comments/")
+@user_login_req
 def comments():
     return render_template("home/comments.html")
 
 
 @home.route("/loginlog/")
+@user_login_req
 def loginlog():
     return render_template("home/loginlog.html")
 
 
 @home.route("/moviecol/")
+@user_login_req
 def moviecol():
     return render_template("home/moviecol.html")
 
