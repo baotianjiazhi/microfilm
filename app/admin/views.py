@@ -67,7 +67,7 @@ def change_filename(filename):
 
 @admin.route("/")
 @admin_login_req
-@admin_auth
+# @admin_auth
 def index():
     return render_template("admin/index.html")
 
@@ -105,7 +105,7 @@ def logout():
 # 修改密码
 @admin.route("/pwd/", methods=['GET', 'POST'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def pwd():
     form = PwdForm()
     if form.validate_on_submit():
@@ -123,7 +123,7 @@ def pwd():
 # 添加标签
 @admin.route("/tag/add/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def tag_add():
     form = TagForm()
     if form.validate_on_submit():
@@ -152,7 +152,7 @@ def tag_add():
 # 编辑标签
 @admin.route("/tag/edit/<int:id>/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def tag_edit(id):
     form = TagForm()
     tag = Tag.query.get_or_404(id)
@@ -173,7 +173,7 @@ def tag_edit(id):
 # 标签列表
 @admin.route("/tag/list/<int:page>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def tag_list(page=None):
     if page is None:
         page = 1
@@ -186,7 +186,7 @@ def tag_list(page=None):
 # 标签删除
 @admin.route("/tag/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def tag_del(id=None):
     tag = Tag.query.filter_by(id=id).first_or_404()
     db.session.delete(tag)
@@ -198,7 +198,7 @@ def tag_del(id=None):
 # 电影添加
 @admin.route("/movie/add/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def movie_add():
     form = MovieForm()
     if form.validate_on_submit():
@@ -235,7 +235,7 @@ def movie_add():
 # 电影列表
 @admin.route("/movie/list/<int:page>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def movie_list(page=None):
     if page is None:
         page = 1
@@ -250,7 +250,7 @@ def movie_list(page=None):
 # 删除电影
 @admin.route("/movie/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def movie_del(id=None):
     movie = Movie.query.get_or_404(int(id))
     db.session.delete(movie)
@@ -262,7 +262,7 @@ def movie_del(id=None):
 # 电影编辑
 @admin.route("/movie/edit/<int:id>/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def movie_edit(id=None):
     form = MovieForm()
     form.url.validators = []
@@ -309,7 +309,7 @@ def movie_edit(id=None):
 
 @admin.route("/preview/add/", methods=['POST', 'GET'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def preview_add():
     form = PreviewForm()
     if form.validate_on_submit():
@@ -335,7 +335,7 @@ def preview_add():
 
 @admin.route("/preview/list/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def preview_list(page=None):
     if page is None:
         page = 1
@@ -347,7 +347,7 @@ def preview_list(page=None):
 
 @admin.route("/preview/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def preview_del(id=None):
     preview = Preview.query.get_or_404(int(id))
     db.session.delete(preview)
@@ -358,7 +358,7 @@ def preview_del(id=None):
 
 @admin.route("/preview/edit/<int:id>/", methods=['POST', 'GET'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def preview_edit(id=None):
     form = PreviewForm()
     form.logo.validators = []
@@ -383,19 +383,20 @@ def preview_edit(id=None):
 
 @admin.route("/user/list/<int:page>/", methods=['GET', 'POST'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def user_list(page=None):
+    user = User.query.all()
     if page is None:
         page = 1
     page_data = User.query.order_by(
         User.addtime.desc()
     ).paginate(page=page, per_page=10)
-    return render_template('admin/user_list.html', page_data=page_data)
+    return render_template('admin/user_list.html', page_data=page_data, user=user)
 
 
 @admin.route("/user/view/<int:id>/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def user_view(id=None):
     user = User.query.get_or_404(int(id))
     return render_template('admin/user_view.html', user=user)
@@ -403,7 +404,7 @@ def user_view(id=None):
 
 @admin.route("/user/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def user_del(id=None):
     user = User.query.get_or_404(int(id))
     db.session.delete(user)
@@ -414,7 +415,7 @@ def user_del(id=None):
 
 @admin.route("/comment/list/<int:page>/", methods=['GET', 'POST'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def comment_list(page=None):
     if page is None:
         page = 1
@@ -433,7 +434,7 @@ def comment_list(page=None):
 
 @admin.route("/comment/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def comment_del(id=None):
     user = Comment.query.get_or_404(int(id))
     db.session.delete(user)
@@ -444,7 +445,7 @@ def comment_del(id=None):
 
 @admin.route("/moviecol/list/<int:page>", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def moviecol_list(page=None):
     if page is None:
         page = 1
@@ -463,7 +464,7 @@ def moviecol_list(page=None):
 
 @admin.route("/moviecol/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def moviecol_del(id=None):
     moviecol = Moviecol.query.get_or_404(int(id))
     db.session.delete(moviecol)
@@ -475,7 +476,7 @@ def moviecol_del(id=None):
 # 操作日志
 @admin.route("/oplog/list/<int:page>/", methods=['GET'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def oplog_list(page=None):
     if page is None:
         page = 1
@@ -491,7 +492,7 @@ def oplog_list(page=None):
 
 @admin.route("/adminloginlog/list/<int:page>/", methods=['GET'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def adminloginlog_list(page=None):
     if page is None:
         page = 1
@@ -507,7 +508,7 @@ def adminloginlog_list(page=None):
 
 @admin.route("/userloginlog/list/<int:page>/", methods=['GET'])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def userloginlog_list(page=None):
     if page is None:
         page = 1
@@ -524,7 +525,7 @@ def userloginlog_list(page=None):
 # 添加角色
 @admin.route("/role/add/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def role_add():
     form = RoleForm()
     if form.validate_on_submit():
@@ -542,7 +543,7 @@ def role_add():
 # 编辑角色
 @admin.route("/role/edit/<int:id>/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def role_edit(id):
     form = RoleForm()
     role = Role.query.get_or_404(id)
@@ -562,7 +563,7 @@ def role_edit(id):
 # 角色列表
 @admin.route("/role/list/<int:page>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def role_list(page=None):
     if page is None:
         page = 1
@@ -575,7 +576,7 @@ def role_list(page=None):
 # 角色删除
 @admin.route("/role/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def role_del(id=None):
     role = Role.query.filter_by(id=id).first_or_404()
     db.session.delete(role)
@@ -586,7 +587,7 @@ def role_del(id=None):
 
 # 权限添加
 @admin.route("/auth/add/", methods=["GET", "POST"])
-@admin_auth
+# @admin_auth
 def auth_add():
     form = AuthForm()
     if form.validate_on_submit():
@@ -604,7 +605,7 @@ def auth_add():
 # 权限列表
 @admin.route("/auth/list/<int:page>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def auth_list(page=None):
     if page is None:
         page = 1
@@ -617,7 +618,7 @@ def auth_list(page=None):
 # 权限删除
 @admin.route("/auth/del/<int:id>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def auth_del(id=None):
     auth = Auth.query.filter_by(id=id).first_or_404()
     db.session.delete(auth)
@@ -629,7 +630,7 @@ def auth_del(id=None):
 # 编辑权限
 @admin.route("/auth/edit/<int:id>/", methods=["GET", "POST"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def auth_edit(id):
     form = AuthForm()
     auth = Auth.query.get_or_404(id)
@@ -646,7 +647,7 @@ def auth_edit(id):
 
 # 添加管理员
 @admin.route("/admin/add/", methods=["GET", "POST"])
-@admin_auth
+# @admin_auth
 def admin_add():
     form = AdminForm()
     from werkzeug.security import generate_password_hash
@@ -667,7 +668,7 @@ def admin_add():
 # 管理员列表
 @admin.route("/admin/list/<int:page>/", methods=["GET"])
 @admin_login_req
-@admin_auth
+# @admin_auth
 def admin_list(page=None):
     if page is None:
         page = 1
