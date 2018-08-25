@@ -12,7 +12,7 @@ from app.admin.forms import PreviewForm
 from app.home.forms import RegisterForm, LoginForm, UserdetailForm, PwdForm, CommentForm
 from . import home
 from flask import render_template, redirect, url_for, flash, session, request
-from app.models import User, Userlog, Preview, Tag, Movie, Comment
+from app.models import User, Userlog, Preview, Tag, Movie, Comment, Moviecol
 from werkzeug.security import generate_password_hash
 from functools import wraps
 import uuid
@@ -187,11 +187,47 @@ def loginlog(page=None):
     ).paginate(page=page, per_page=10)
     return render_template("home/loginlog.html", page_data=page_data)
 
-
-@home.route("/moviecol/")
+#添加电影收藏
+@home.route("/moviecol/add", methods=["GET"])
 @user_login_req
-def moviecol():
-    return render_template("home/moviecol.html")
+def moviecol_add():
+    uid = request.args.get("uid", '')
+    mid = request.args.get("mid", '')
+    moviecol = Moviecol.query.filter_by(
+        user_id=int(uid),
+        movie_id=int(mid)
+    ).count()
+    if moviecol == 1:
+        data = dict(ok=0)
+    if moviecol == 0:
+        moviecol = Moviecol(
+            user_id=int(uid),
+            movie_id=int(mid)
+        )
+        db.session.add(moviecol)
+        db.session.commit()
+        data = dict(ok=1)
+    import json
+    return json.dumps(data)
+
+
+
+@home.route("/moviecol/<int:page>")
+@user_login_req
+def moviecol(page=None):
+    if page is None:
+        page = 1
+    page_data = Moviecol.query.join(
+        Movie
+    ).join(
+        User
+    ).filter(
+        Movie.id == Moviecol.movie_id,
+        User.id == session["user_id"]
+    ).order_by(
+        Moviecol.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("home/moviecol.html", page_data=page_data)
 
 
 # 首页
@@ -277,7 +313,7 @@ def search(page=None):
     ).order_by(
         Movie.addtime.desc()
     ).paginate(page=page, per_page=10)
-
+    page_data.key = key
     return render_template("home/search.html", key=key, page_data=page_data, movie_count=movie_count)
 
 
